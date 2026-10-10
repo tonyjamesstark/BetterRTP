@@ -23,8 +23,6 @@ import me.SuperRonanCraft.BetterRTP.references.settings.Settings;
 import me.SuperRonanCraft.BetterRTP.references.web.Metrics;
 import me.SuperRonanCraft.BetterRTP.references.web.Updater;
 import me.SuperRonanCraft.BetterRTP.versions.FoliaHandler;
-import me.SuperRonanCraft.BetterRTP.versions.PaperEnvironmentFallback;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -55,8 +53,6 @@ public class BetterRTP extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        if (PaperLib.isPaper() && PaperLib.getMinecraftVersion() == 0)
-            PaperLib.setCustomEnvironment(new PaperEnvironmentFallback());
         registerDependencies();
         loadAll();
         new Updater(this);

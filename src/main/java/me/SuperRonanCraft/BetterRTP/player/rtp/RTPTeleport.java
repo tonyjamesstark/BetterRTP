@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import io.papermc.lib.PaperLib;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import me.SuperRonanCraft.BetterRTP.player.rtp.effects.RTPEffect_Titles;
 import me.SuperRonanCraft.BetterRTP.player.rtp.effects.RTPEffects;
@@ -20,9 +19,7 @@ import me.SuperRonanCraft.BetterRTP.references.rtpinfo.worlds.WorldPlayer;
 import java.util.logging.Level;
 
 //---
-//Credit to @PaperMC for PaperLib - https://github.com/PaperMC/PaperLib
-//
-//Use of asyncronous chunk loading and teleporting
+//Use of asynchronous chunk loading and teleporting (Paper API directly)
 //---
 
 public class RTPTeleport {
@@ -53,7 +50,7 @@ public class RTPTeleport {
             RTP_TeleportEvent event = new RTP_TeleportEvent(p, location, wPlayer.getWorldtype());
             getPl().getServer().getPluginManager().callEvent(event);
             Location loc = event.getLocation();
-            PaperLib.teleportAsync(p, loc).whenComplete((success, ex) -> { //Async teleport
+            p.teleportAsync(loc).whenComplete((success, ex) -> { //Async teleport
                 if (ex != null || !success) {
                     if (ex != null)
                         getPl().getLogger().log(Level.WARNING, "Error teleporting " + p.getName(), ex);
@@ -69,7 +66,7 @@ public class RTPTeleport {
                 //Save respawn location if first join
                 if (type == RTP_TYPE.JOIN) //RTP Type was Join
                     if (BetterRTP.getInstance().getSettings().isRtpOnFirstJoin_SetAsRespawn()) //Save as respawn is enabled
-                        p.setBedSpawnLocation(loc, true); //True means to force a respawn even without a valid bed
+                        p.setRespawnLocation(loc, true); //True means to force a respawn even without a valid bed
             });
         } catch (Exception e) {
             RTPPlayer.cleanupFailedRTP(sendi, p, wPlayer, true);
