@@ -22,8 +22,13 @@ public class SoftDepends {
         pl.getPlugin().setRespecting(config.getBoolean(pre + pl.getSetting_name()));
         if (pl.getPlugin().isRespecting())
             pl.getPlugin().setEnabled(Bukkit.getPluginManager().isPluginEnabled(pl.getPluginyml_name()));
-        if (pl.getPlugin().isRespecting())
-            debug("Respecting `" + pl.getSetting_name() + "` was " + (pl.getPlugin().enabled ? "SUCCESSFULLY" : "NOT") + " registered");
+        if (!pl.getPlugin().isRespecting())
+            return;
+        if (pl.getPlugin().isEnabled())
+            debug("Respecting `" + pl.getSetting_name() + "` was SUCCESSFULLY registered");
+        else
+            BetterRTP.getInstance().getLogger().warning("Respect." + pl.getSetting_name() + " is on but "
+                    + pl.getPluginyml_name() + " is not enabled; its regions are NOT respected");
     }
 
 

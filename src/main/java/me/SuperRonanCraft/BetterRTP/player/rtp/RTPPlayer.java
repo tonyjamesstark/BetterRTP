@@ -1,6 +1,7 @@
 package me.SuperRonanCraft.BetterRTP.player.rtp;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -66,19 +67,34 @@ public class RTPPlayer {
                 AsyncHandler.sync(() -> {
                     try { //Prior to 1.12 this async chunk will NOT work
                         CompletableFuture<Chunk> chunk = PaperLib.getChunkAtAsync(loc);
-                        chunk.thenAccept(result -> {
-                            //BetterRTP.debug("Checking location for " + p.getName());
-                            attempt(sendi, loc);
+                        chunk.whenComplete((result, ex) -> {
+                            if (ex != null)
+                                onAttemptError(sendi, ex);
+                            else
+                                attemptSafely(sendi, loc);
                         });
                     } catch (IllegalStateException e) {
                         //Legacy non-async support
-                        attempt(sendi, loc);
-                    } catch (Throwable ignored) {
-
+                        attemptSafely(sendi, loc);
+                    } catch (Throwable t) {
+                        onAttemptError(sendi, t);
                     }
                 });
             });
         }
+    }
+
+    private void attemptSafely(CommandSender sendi, Location loc) {
+        try {
+            attempt(sendi, loc);
+        } catch (Throwable t) {
+            onAttemptError(sendi, t);
+        }
+    }
+
+    private void onAttemptError(CommandSender sendi, Throwable t) {
+        getPl().getLogger().log(Level.WARNING, "Error finding a safe RTP location for " + player.getName(), t);
+        cleanupFailedRTP(sendi, player, worldPlayer, true);
     }
 
     private void attempt(CommandSender sendi, Location loc) {
@@ -98,7 +114,7 @@ public class RTPPlayer {
             } else {
                 if (worldPlayer.getPlayerInfo().applyCooldown)
                     getPl().getCooldowns().removeCooldown(player, worldPlayer.getWorld());
-                getPl().getPInfo().getRtping().remove(player);
+                getPl().getPInfo().removeRtping(player);
             }
         } else {
             randomlyTeleport(sendi);
@@ -108,11 +124,19 @@ public class RTPPlayer {
 
     // Compressed code for MaxAttempts being met
     private void metMax(CommandSender sendi, Player p) {
-        settings.teleport.failedTeleport(p, sendi);
-        getPl().getCooldowns().removeCooldown(p, worldPlayer.getWorld());
-        getPl().getPInfo().getRtping().remove(p);
+        cleanupFailedRTP(sendi, p, worldPlayer, true);
         //RTP Failed Event
         Bukkit.getServer().getPluginManager().callEvent(new RTP_FailedEvent(this));
+    }
+
+    // Shared by RTP, RTPDelay and RTPTeleport: clears rtping and the cooldown on any failed/cancelled rtp
+    static void cleanupFailedRTP(CommandSender sendi, Player p, WorldPlayer worldPlayer, boolean notify) {
+        BetterRTP pl = BetterRTP.getInstance();
+        if (notify)
+            pl.getRTP().getTeleport().failedTeleport(p, sendi);
+        pl.getEco().refund(worldPlayer);
+        pl.getCooldowns().removeCooldown(p, worldPlayer.getWorld());
+        pl.getPInfo().removeRtping(p);
     }
 
     /**

@@ -13,11 +13,13 @@ public class PlayerDataManager {
     private final Map<UUID, PlayerData> playerData = new ConcurrentHashMap<>();
 
     public PlayerData getData(@NonNull Player p) {
-        return playerData.computeIfAbsent(p.getUniqueId(), uuid -> new PlayerData(p));
+        if (!p.isOnline())
+            return playerData.get(p.getUniqueId());
+        return playerData.computeIfAbsent(p.getUniqueId(), PlayerData::new);
     }
 
     @Nullable
-    public PlayerData getData(UUID id) {
+    public PlayerData find(UUID id) {
         return playerData.get(id);
     }
 

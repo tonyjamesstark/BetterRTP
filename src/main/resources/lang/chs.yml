@@ -7,10 +7,12 @@ Messages:
     Loading: '&a安全位置已定位！&7加载区块中……'
     Teleport: '&a传送中……&f直到我们找到安全的位置之前请等一下！'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&c你的钱不够了，&7你至少要有$%price%&7才能随机传送！'
     NotSafe: '&c由于在%attempts%次尝试内未能找到安全的位置，&7你未被传送！'
     Hunger: '&7你太饿了，&c传送之前先吃点东西再说！'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player%被传送到了&7 x=%x% y=%y% z=%z%。共尝试&f%attempts%&7次！'
     NotSafe: '&c由于在%attempts%次尝试内未能找到安全的位置，&7%player%未被传送！'
     Biome: '&c看上去&7%biome%&c群系不存在，&7试试使用Tab表查找！'

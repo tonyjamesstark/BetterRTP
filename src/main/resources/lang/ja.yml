@@ -7,10 +7,12 @@ Messages:
 #    Loading: '&aSafe spot located! &7Loading chunks...'
 #    Teleport: '&aTeleporting... &fplease wait while we find a safe location!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&c資金が不十分のためRTPできませんでした！ &7RTPには最低$%price%&7が必要です！'
     NotSafe: '&c%attempts%回の試行で安全な場所が見つかりませんでした！ &7あなたははRTPされませんでした！'
 #    Hunger: '&cCould not rtp because you are... &7too hungry&c, eat something fella!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player%が&7x=%x% y=%y% z=%z% に&f%attempts%&7回の試行でテレポートしました！'
     NotSafe: '&c%attempts%回の試行で安全な場所が見つかりませんでした！ &7%player%はRTPされませんでした！'
 #    Biome: '&cSeems like the biome&7 %biome%&c does not exist! &7Try using the tab list!'

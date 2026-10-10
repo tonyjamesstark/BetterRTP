@@ -9,6 +9,7 @@ import me.SuperRonanCraft.BetterRTP.references.Permissions;
 import me.SuperRonanCraft.BetterRTP.references.RTPLogger;
 import me.SuperRonanCraft.BetterRTP.references.WarningHandler;
 import me.SuperRonanCraft.BetterRTP.references.database.DatabaseHandler;
+import me.SuperRonanCraft.BetterRTP.references.database.SQLiteExecutor;
 import me.SuperRonanCraft.BetterRTP.references.depends.DepEconomy;
 import me.SuperRonanCraft.BetterRTP.references.depends.DepPlaceholderAPI;
 import me.SuperRonanCraft.BetterRTP.references.file.Files;
@@ -22,11 +23,14 @@ import me.SuperRonanCraft.BetterRTP.references.settings.Settings;
 import me.SuperRonanCraft.BetterRTP.references.web.Metrics;
 import me.SuperRonanCraft.BetterRTP.references.web.Updater;
 import me.SuperRonanCraft.BetterRTP.versions.FoliaHandler;
+import me.SuperRonanCraft.BetterRTP.versions.PaperEnvironmentFallback;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
+import java.util.logging.Level;
 
 public class BetterRTP extends JavaPlugin {
     @Getter private final Permissions perms = new Permissions();
@@ -51,6 +55,8 @@ public class BetterRTP extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        if (PaperLib.isPaper() && PaperLib.getMinecraftVersion() == 0)
+            PaperLib.setCustomEnvironment(new PaperEnvironmentFallback());
         registerDependencies();
         loadAll();
         new Updater(this);
@@ -68,6 +74,8 @@ public class BetterRTP extends JavaPlugin {
     public void onDisable() {
         invs.closeAll();
         queue.unload();
+        cooldowns.unload();
+        SQLiteExecutor.shutdown();
         rtpLogger.unload();
     }
 
@@ -80,8 +88,8 @@ public class BetterRTP extends JavaPlugin {
         try {
             this.cmd.commandExecuted(sendi, label, args);
         } catch (NullPointerException e) {
-            e.printStackTrace();
-            Message_RTP.sms(sendi, "&cERROR &7Seems like your Administrator did not update their language file!");
+            getLogger().log(Level.SEVERE, "Error executing command '" + label + "'", e);
+            Message_RTP.sms(sendi, "&cERROR &7Something went wrong running that command, check the console.");
         }
         return true;
     }
@@ -116,6 +124,6 @@ public class BetterRTP extends JavaPlugin {
     }
 
     public static void debug(String str) {
-        getInstance().getLogger().info(str);
+        getInstance().getRtpLogger().log(str);
     }
 }

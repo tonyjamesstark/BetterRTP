@@ -6,6 +6,8 @@ import me.SuperRonanCraft.BetterRTP.references.PermissionNode;
 import me.SuperRonanCraft.BetterRTP.references.file.FileOther;
 import me.SuperRonanCraft.BetterRTP.references.messages.Message_RTP;
 import me.SuperRonanCraft.BetterRTP.references.messages.MessagesCore;
+import me.SuperRonanCraft.BetterRTP.references.player.HelperPlayer;
+import me.SuperRonanCraft.BetterRTP.references.player.playerdata.PlayerData;
 import me.SuperRonanCraft.BetterRTP.references.web.Updater;
 import me.SuperRonanCraft.BetterRTP.references.helpers.HelperRTP;
 import me.SuperRonanCraft.BetterRTP.versions.AsyncHandler;
@@ -20,7 +22,13 @@ public class Join {
     static void event(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         updater(p);
-        AsyncHandler.async(() -> getPl().getCooldowns().loadPlayer(p));
+        PlayerData data = HelperPlayer.getData(p);
+        AsyncHandler.async(() -> {
+            if (!p.isOnline()) return;
+            getPl().getCooldowns().loadPlayer(p, data);
+            if (!p.isOnline()) //Quit while loading; don't leave their data behind
+                HelperPlayer.unload(p);
+        });
         rtpOnFirstJoin(p);
     }
 

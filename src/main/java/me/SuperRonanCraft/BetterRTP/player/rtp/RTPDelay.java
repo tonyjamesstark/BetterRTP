@@ -12,6 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 class RTPDelay implements Listener {
     private WrappedTask task;
@@ -28,9 +29,9 @@ class RTPDelay implements Listener {
     private void delay(CommandSender sendi, int delay) {
         if (!getPl().getRTP().getTeleport().beforeTeleportDelay(rtp.getPlayer(), delay)) {
             task = AsyncHandler.syncLater(run(sendi, this), delay * 20L);
-            if (cancelOnMove || cancelOnDamage)
-                Bukkit.getPluginManager().registerEvents(this, BetterRTP.getInstance());
-        }
+            Bukkit.getPluginManager().registerEvents(this, BetterRTP.getInstance());
+        } else
+            RTPPlayer.cleanupFailedRTP(sendi, rtp.getPlayer(), rtp.getWorldPlayer(), false);
     }
 
     @EventHandler
@@ -57,21 +58,32 @@ class RTPDelay implements Listener {
             }
     }
 
+    @EventHandler
+    @SuppressWarnings("unused")
+    private void event(PlayerQuitEvent e) {
+        if (e.getPlayer().equals(rtp.getPlayer())) {
+            stop();
+            RTPPlayer.cleanupFailedRTP(null, rtp.getPlayer(), rtp.getWorldPlayer(), false);
+        }
+    }
+
     private void cancel() {
+        stop();
+        getPl().getRTP().getTeleport().cancelledTeleport(rtp.getPlayer());
+        RTPPlayer.cleanupFailedRTP(null, rtp.getPlayer(), rtp.getWorldPlayer(), false);
+        Bukkit.getServer().getPluginManager().callEvent(new RTP_CancelledEvent(rtp.getPlayer()));
+    }
+
+    private void stop() {
         if (task != null)
             task.cancel();
         HandlerList.unregisterAll(this);
-        getPl().getRTP().getTeleport().cancelledTeleport(rtp.getPlayer());
-        //getPl().getEco().unCharge(rtp.getPlayer(), rtp.pWorld);
-        getPl().getCooldowns().removeCooldown(rtp.getPlayer(), rtp.worldPlayer.getWorld());
-        getPl().getPInfo().getRtping().remove(rtp.getPlayer());
-        Bukkit.getServer().getPluginManager().callEvent(new RTP_CancelledEvent(rtp.getPlayer()));
     }
 
     private Runnable run(final CommandSender sendi, final RTPDelay cls) {
         return () -> {
             HandlerList.unregisterAll(cls);
-            if (getPl().getPInfo().getRtping().containsKey(rtp.getPlayer()))
+            if (getPl().getPInfo().isRtping(rtp.getPlayer()))
                 rtp.randomlyTeleport(sendi);
         };
     }

@@ -7,10 +7,12 @@ Messages:
     Loading: '&aמקום בטוח נמצא! &fטוען צ''אנקים...'
     Teleport: '&aמשגר... &fבבקשה להמתין מחפש מקום בטוח לשיגור!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cלא היה לכם מספיק כסף בשביל להשתגר! &fצריך שיהיה לכם לפחות $%price% &7בשביללהשתגר!'
     NotSafe: '&cמערכת לא הצליחה, לקח למערכת %attempts% נסיונות! &fלא שוגרתם לשום מקום!'
     Hunger: '&cלא שוגרתם בגלל. &fשאתם רעבים מידי&c, בבקשה לאכול משהו ואז נשגר אתכם!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% שוגר ל &f x=%x% y=%y% z=%z% המערכת עשתה זאת ב &f%attempts% &7נסיונות!'
     NotSafe: '&cמערכת לא הצליחה למצוא מקום בטוח ב %attempts% נסיונות! &f%player% לאשוגר לשום מקום!'
     Biome: '&cהסביבה שהוגדרה לשיגור &f %biome%&c לא קיימת! &fנסו להשתמש ב TAB!'

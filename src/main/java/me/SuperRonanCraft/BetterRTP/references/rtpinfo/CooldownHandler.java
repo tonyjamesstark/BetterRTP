@@ -11,6 +11,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
+
 import lombok.Getter;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import me.SuperRonanCraft.BetterRTP.references.database.DatabaseCooldowns;
@@ -27,6 +29,7 @@ public class CooldownHandler {
     @Getter private int defaultCooldownTime; //Global Cooldown timer
     private int lockedAfter; //Rtp's before being locked
     private final List<Player> downloading = new CopyOnWriteArrayList<>();
+    private WrappedTask downloadRetryTask;
 
     public void load() {
         FileOther.FILETYPE config = FileOther.FILETYPE.CONFIG;
@@ -42,8 +45,13 @@ public class CooldownHandler {
         queueDownload();
     }
 
+    public void unload() {
+        if (downloadRetryTask != null)
+            downloadRetryTask.cancel();
+    }
+
     private void queueDownload() {
-        AsyncHandler.asyncLater(() -> {
+        downloadRetryTask = AsyncHandler.asyncLater(() -> {
             if (cooldownByWorld && !DatabaseHandler.getCooldowns().isLoaded()) {
                queueDownload();
                return;
@@ -108,12 +116,13 @@ public class CooldownHandler {
     public void removeCooldown(Player player, World world) {
         if (!enabled) return;
         PlayerData playerData = getData(player);
+        if (playerData == null) return;
         CooldownData cooldownData = playerData.getCooldowns().getOrDefault(world, null);
         if (cooldownData != null) {
             if (lockedAfter > 0) {
                 if (playerData.getRtpCount() <= 0) { //Remove from file as well
                     savePlayer(player, world, cooldownData, true);
-                    getData(player).getCooldowns().put(world, null);
+                    getData(player).getCooldowns().remove(world);
                 } else { //Keep the player cached
                     savePlayer(player, world, cooldownData, false);
                 }
@@ -128,6 +137,7 @@ public class CooldownHandler {
     }
 
     private void savePlayer(Player player, @Nullable World world, @Nullable CooldownData data, boolean remove) {
+        PlayerData playerData = getData(player);
         AsyncHandler.async(() -> {
                 if (world != null && data != null && getDatabaseWorlds() != null) { //Per World enabled?
                     if (!remove)
@@ -135,17 +145,21 @@ public class CooldownHandler {
                     else
                         getDatabaseWorlds().removePlayer(data.getUuid(), world);
                 }
-                DatabaseHandler.getPlayers().setData(getData(player));
+                if (playerData != null)
+                    DatabaseHandler.getPlayers().setData(playerData);
             });
     }
 
     public void loadPlayer(Player player) {
+        loadPlayer(player, getData(player));
+    }
+
+    public void loadPlayer(Player player, PlayerData playerData) {
         if (!isEnabled()) {
           return;
         }
 
-        PlayerData playerData = getData(player);
-        if (playerData == null) {
+        if (playerData == null || !player.isOnline()) {
             return;
         }
 

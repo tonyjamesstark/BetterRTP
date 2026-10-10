@@ -32,6 +32,7 @@ public class DepEconomy {
                 return false;
             } else {
                 player.setFoodLevel(player.getFoodLevel() - hunger);
+                pWorld.setHungerTaken(hunger);
                 took_food = true;
             }
         }
@@ -45,10 +46,12 @@ public class DepEconomy {
                 boolean passed_economy = r.transactionSuccess();
                 if (!passed_economy) {
                     MessagesCore.FAILED_PRICE.send(sendi, pWorld.getPrice());
-                    if (took_food)
+                    if (took_food) {
                         player.setFoodLevel(player.getFoodLevel() + hunger);
-                } //else
-                    //pWorld.eco_money_taken = true;
+                        pWorld.setHungerTaken(0);
+                    }
+                } else
+                    pWorld.setMoneyTaken(pWorld.getPrice());
                 return passed_economy;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -86,10 +89,19 @@ public class DepEconomy {
         return true;
     }
 
-    /*public void unCharge(Player p, WorldPlayer pWorld) {
-        if (e != null && pWorld.getPrice() != 0 && pWorld.eco_money_taken)
-            e.depositPlayer(p, pWorld.getPrice());
-    }*/
+    public void refund(WorldPlayer pWorld) {
+        Player player = pWorld.getPlayer();
+        if (e != null && pWorld.getMoneyTaken() != 0)
+            try {
+                e.depositPlayer(player, pWorld.getMoneyTaken());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        if (pWorld.getHungerTaken() != 0 && player.isOnline())
+            player.setFoodLevel(Math.min(20, player.getFoodLevel() + pWorld.getHungerTaken()));
+        pWorld.setMoneyTaken(0);
+        pWorld.setHungerTaken(0);
+    }
 
     public void load() {
         check(true);

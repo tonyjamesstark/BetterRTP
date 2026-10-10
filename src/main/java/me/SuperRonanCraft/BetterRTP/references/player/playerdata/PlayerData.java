@@ -1,10 +1,10 @@
 package me.SuperRonanCraft.BetterRTP.references.player.playerdata;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import me.SuperRonanCraft.BetterRTP.references.rtpinfo.CooldownData;
 public class PlayerData {
 
     public boolean loading; //Is this players data loading?
-    public final Player player;
+    public final UUID uuid;
     //Menus
     @Getter final PlayerData_Menus menu = new PlayerData_Menus();
     //Player Data
@@ -24,8 +24,8 @@ public class PlayerData {
     @Getter @Setter long globalCooldown;
     @Getter @Setter long invincibleEndTime;
 
-    PlayerData(Player player) {
-        this.player = player;
+    PlayerData(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public void load(boolean joined) {

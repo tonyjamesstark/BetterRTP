@@ -67,11 +67,16 @@ public class DatabaseQueue extends SQLite {
                 try {
                     conn = getSQLConnection();
                     ps = conn.prepareStatement("SELECT * FROM " + tables.get(0) + " WHERE "
-                            + COLUMNS.WORLD.name + " = '" + range.getWorld().getName() + "' AND "
-                            + COLUMNS.X.name + " BETWEEN " + range.getXLow() + " AND " + range.getXHigh()
-                            + " AND " + COLUMNS.Z.name + " BETWEEN " + range.getZLow() + " AND " + range.getZHigh()
+                            + COLUMNS.WORLD.name + " = ? AND "
+                            + COLUMNS.X.name + " BETWEEN ? AND ?"
+                            + " AND " + COLUMNS.Z.name + " BETWEEN ? AND ?"
                             + " ORDER BY RANDOM() LIMIT " + (QueueGenerator.queueMax + 1)
                     );
+                    ps.setString(1, range.getWorld().getName());
+                    ps.setInt(2, range.getXLow());
+                    ps.setInt(3, range.getXHigh());
+                    ps.setInt(4, range.getZLow());
+                    ps.setInt(5, range.getZHigh());
                     rs = ps.executeQuery();
                     while (rs.next()) {
                         long x = rs.getLong(COLUMNS.X.name);

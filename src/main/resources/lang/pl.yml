@@ -7,10 +7,12 @@ Messages:
     Loading: '&aZnaleziono bezpieczną strefę! &7Ładowanie chunków...'
     Teleport: '&aTeleportuję... &fproszę czekać aż znajdziemy bezpieczną lokację!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cNie udało się wykonać losowej teleportacji z powodu niewystarczających środków! &7Musisz mieć przynajmniej $%price% &7by się teleportować!'
     NotSafe: '&cNie udało się znaleź bezpiecznego miejsca po %attempts% próbach! &7Nie zostałeś przeniesiony!'
     Hunger: '&cNie udało się wykonać losowej teleportacji, ponieważ jesteś &7zbyt głodny&c, zjedz coś!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% został przeteleportowany do&7 x=%x% y=%y% z=%z%!'
     NotSafe: '&cNie udało się znaleźć bezpiecznego miejsca po %attempts% próbach! &7%player% nie został przeteleportowany!'
     Biome: '&cWygląda na to, że biom&7 %biome%&c nie istnieje! &7Spróbuj użyć biomu z listy!'

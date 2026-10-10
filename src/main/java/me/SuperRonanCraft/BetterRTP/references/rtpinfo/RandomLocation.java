@@ -50,16 +50,14 @@ public class RandomLocation {
     }
 
     private static Location generateRound(RTPWorld rtpWorld) {
-        // Return a random X and Z based off location on a spiral curve
+        // Return a random X and Z uniformly distributed over the min..max radius annulus
         int min = rtpWorld.getMinRadius();
-        int max = rtpWorld.getMaxRadius() - min;
+        int max = rtpWorld.getMaxRadius();
         int x, z;
 
-        double area = Math.PI * (max - min) * (max + min); //of all the area in this donut
-        double subArea = area * new Random().nextDouble(); //pick a random subset of that area
-
-        double r = Math.sqrt(subArea/Math.PI + min * min); //convert area to radius
-        double theta = (r - (int) r) * 2 * Math.PI; //use the remainder as an angle
+        Random random = new Random();
+        double r = Math.sqrt(min * (double) min + random.nextDouble() * (max * (double) max - min * (double) min));
+        double theta = random.nextDouble() * 2 * Math.PI;
 
         // polar to cartesian
         x = (int) (r * Math.cos(theta));

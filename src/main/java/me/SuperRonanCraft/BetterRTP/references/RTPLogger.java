@@ -6,7 +6,6 @@ import me.SuperRonanCraft.BetterRTP.references.file.FileOther;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.*;
@@ -15,36 +14,37 @@ public class RTPLogger {
 
     @Getter private String format;
     @Getter private File file;
+    private final Logger logger = Logger.getLogger("BetterRTP-rtp");
     private FileHandler handler;
-    //private ConsoleHandler consoleHandler_rtp, consoleHandler_logger;
+    private BetterRTP plugin;
+    private boolean enabled, toConsole;
 
     public void setup(BetterRTP plugin) {
         FileOther.FILETYPE config = plugin.getFiles().getType(FileOther.FILETYPE.CONFIG);
-        boolean enabled = config.getBoolean("Settings.Logger.Enabled");
-        Logger logger = plugin.getLogger();
-        logger.setUseParentHandlers(true);
-        if (handler != null) {
-            logger.removeHandler(handler);
-            handler.close();
-        }
+        enabled = config.getBoolean("Settings.Logger.Enabled");
+        this.plugin = plugin;
+        unload();
         if (!enabled) return;
         this.format = config.getString("Settings.Logger.Format");
-        boolean toConsole = config.getBoolean("Settings.Logger.LogToConsole");
+        toConsole = config.getBoolean("Settings.Logger.LogToConsole");
         try {
             this.file = new File(plugin.getDataFolder() + File.separator + "log.txt");
-            Files.deleteIfExists(file.toPath());
             this.handler = new FileHandler(file.getPath(), true);
             handler.setFormatter(new MyFormatter());
-            logger.setUseParentHandlers(toConsole); //Disable logging to console
+            logger.setUseParentHandlers(false);
             logger.addHandler(handler);
-            //Log copying
-            //consoleHandler_logger = new MyConsole(this.logger, plugin.getName());
-            //plugin.getLogger().addHandler(consoleHandler_logger);
-            //consoleHandler_rtp = new MyConsole(this.logger, plugin.getName());
-            //plugin.getLogger().addHandler(consoleHandler_rtp);
+            plugin.getLogger().addHandler(handler);
         } catch (IOException e) {
+            enabled = false;
             e.printStackTrace();
         }
+    }
+
+    public void log(String str) {
+        if (enabled && !toConsole)
+            logger.info(str);
+        else
+            BetterRTP.getInstance().getLogger().info(str);
     }
 
     private static String getDate() {
@@ -53,8 +53,11 @@ public class RTPLogger {
     }
 
     public void unload() {
-        if (handler != null)
-            handler.close();
+        if (handler == null) return;
+        logger.removeHandler(handler);
+        plugin.getLogger().removeHandler(handler);
+        handler.close();
+        handler = null;
     }
 
     static class MyFormatter extends Formatter {

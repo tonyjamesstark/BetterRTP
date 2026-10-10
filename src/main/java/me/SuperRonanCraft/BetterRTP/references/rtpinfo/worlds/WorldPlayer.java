@@ -1,6 +1,7 @@
 package me.SuperRonanCraft.BetterRTP.references.rtpinfo.worlds;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.SuperRonanCraft.BetterRTP.player.commands.RTP_SETUP_TYPE;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import me.SuperRonanCraft.BetterRTP.player.rtp.RTPSetupInformation;
@@ -33,6 +34,7 @@ public class WorldPlayer implements RTPWorld, RTPWorld_Defaulted {
     public String setup_name;
 
     @Getter private boolean setup = false;
+    @Getter @Setter private int moneyTaken, hungerTaken;
 
     public WorldPlayer(RTPSetupInformation setup_info) {
         this.sendi = setup_info.getSender();

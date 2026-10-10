@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import io.papermc.lib.PaperLib;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
@@ -17,6 +16,8 @@ import me.SuperRonanCraft.BetterRTP.references.customEvents.RTP_TeleportPostEven
 import me.SuperRonanCraft.BetterRTP.references.customEvents.RTP_TeleportPreEvent;
 import me.SuperRonanCraft.BetterRTP.references.messages.MessagesCore;
 import me.SuperRonanCraft.BetterRTP.references.rtpinfo.worlds.WorldPlayer;
+
+import java.util.logging.Level;
 
 //---
 //Credit to @PaperMC for PaperLib - https://github.com/PaperMC/PaperLib
@@ -52,21 +53,26 @@ public class RTPTeleport {
             RTP_TeleportEvent event = new RTP_TeleportEvent(p, location, wPlayer.getWorldtype());
             getPl().getServer().getPluginManager().callEvent(event);
             Location loc = event.getLocation();
-            PaperLib.teleportAsync(p, loc).thenRun(new BukkitRunnable() { //Async teleport
-                @Override
-                public void run() {
-                    afterTeleport(p, loc, wPlayer, attempts, oldLoc, type);
-                    if (sendi != p) //Tell player who requested that the player rtp'd
-                        sendSuccessMsg(sendi, p.getName(), loc, wPlayer, false, attempts);
-                    getPl().getPInfo().getRtping().remove(p); //No longer rtp'ing
-                    //Save respawn location if first join
-                    if (type == RTP_TYPE.JOIN) //RTP Type was Join
-                        if (BetterRTP.getInstance().getSettings().isRtpOnFirstJoin_SetAsRespawn()) //Save as respawn is enabled
-                            p.setBedSpawnLocation(loc, true); //True means to force a respawn even without a valid bed
+            PaperLib.teleportAsync(p, loc).whenComplete((success, ex) -> { //Async teleport
+                if (ex != null || !success) {
+                    if (ex != null)
+                        getPl().getLogger().log(Level.WARNING, "Error teleporting " + p.getName(), ex);
+                    else //Another plugin cancelled the teleport
+                        cancelledByPlugin(p, sendi);
+                    RTPPlayer.cleanupFailedRTP(sendi, p, wPlayer, ex != null);
+                    return;
                 }
+                afterTeleport(p, loc, wPlayer, attempts, oldLoc, type);
+                if (sendi != p) //Tell player who requested that the player rtp'd
+                    sendSuccessMsg(sendi, p.getName(), loc, wPlayer, false, attempts);
+                getPl().getPInfo().removeRtping(p); //No longer rtp'ing
+                //Save respawn location if first join
+                if (type == RTP_TYPE.JOIN) //RTP Type was Join
+                    if (BetterRTP.getInstance().getSettings().isRtpOnFirstJoin_SetAsRespawn()) //Save as respawn is enabled
+                        p.setBedSpawnLocation(loc, true); //True means to force a respawn even without a valid bed
             });
         } catch (Exception e) {
-            getPl().getPInfo().getRtping().remove(p); //No longer rtp'ing (errored)
+            RTPPlayer.cleanupFailedRTP(sendi, p, wPlayer, true);
             e.printStackTrace();
         }
     }
@@ -119,7 +125,8 @@ public class RTPTeleport {
         if (effects.getTitles().sendMsg(RTPEffect_Titles.RTP_TITLE_TYPE.LOADING) && sendStatusMessage()) { //Show msg if enabled or if not same player
             if (p == sendi)
                 MessagesCore.SUCCESS_LOADING.send(sendi);
-            MessagesCore.SUCCESS_LOADING.send(p);
+            else
+                MessagesCore.SUCCESS_LOADING.send(p);
         }
     }
 
@@ -132,6 +139,15 @@ public class RTPTeleport {
                 MessagesCore.OTHER_NOTSAFE.send(sendi, Arrays.asList(
                         BetterRTP.getInstance().getRTP().maxAttempts,
                         p.getName()));
+    }
+
+    private void cancelledByPlugin(Player p, CommandSender sendi) {
+        effects.getTitles().showTitle(RTPEffect_Titles.RTP_TITLE_TYPE.FAILED, p, p.getLocation(), 0, 0);
+        if (effects.getTitles().sendMsg(RTPEffect_Titles.RTP_TITLE_TYPE.FAILED)) {
+            MessagesCore.FAILED_CANCELLED.send(p);
+            if (sendi != p)
+                MessagesCore.OTHER_CANCELLED.send(sendi, p);
+        }
     }
 
     //Processing

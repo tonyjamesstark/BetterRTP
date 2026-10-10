@@ -8,10 +8,12 @@ Messages:
     Loading: '&aUn endroit sûr a été trouvé ! &7Chargement des chunks...'
     Teleport: '&aTéléportation... &fMerci de patienter pendant la recherche d''un endroit sûr !'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cVous n''avez pas pu être téléporté; Manque de fonds ! &7Vous devez avoir au moins $%price% &7pour vous téléporter !'
     NotSafe: '&cImpossible de trouver un endroit sûr en %attempts% tentatives ! &7Vous n''avez pas été téléporté !'
     Hunger: '&cImpossible de vous téléporter car vous avez trop faim, manger pour remplir votre barre de nourriture !'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% a été téléporté aux coordonées &7x=%x% y=%y% z=%z%!'
     NotSafe: '&cImpossible de trouver un endroit sûr en %attempts% tentatives ! &7%player% n''a pas été téléporté !'
     Biome: '&cIl demblerais que le biome &7%biome% &cn''existe pas ! &7Utiliser l''autocomplétion de la Tab list !'

@@ -7,10 +7,12 @@ Messages:
     Loading: '&aSicheren Ort gefunden! &7Chunks werden geladen...'
     Teleport: '&aTeleportiere... &fbitte warte einen Moment, bis wir einen sicheren Ort gefunden haben!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cDu hast zu wenig Geld! &7Du musst über mindestens $%price% &7verfügen!'
     NotSafe: '&cEs konnte nach %attempts% Versuchen kein sicherer Ort gefunden werden! &7Du wurdest nicht teleportiert!'
     Hunger: '&cDu konntest nicht teleportiert werden weil... &7du bist zu hungrig&c, ess etwas und versuche es erneut!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% wurde teleportiert zu&7 x=%x% y=%y% z=%z% nach &f%attempts% &7Versuchen!'
     NotSafe: '&cEs konnte nach %attempts% Versuchen kein sicherer Ort gefunden werden! &7%player% wurde nicht teleportiert!'
     Biome: '&cEs sieht so aus, als würde es das Biom &7 %biome%&c nicht geben! &7Versuche, die Tab-Liste zu verwenden!'

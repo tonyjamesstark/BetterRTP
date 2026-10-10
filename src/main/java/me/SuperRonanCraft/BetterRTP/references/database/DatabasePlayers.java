@@ -42,7 +42,7 @@ public class DatabasePlayers extends SQLite {
     }
 
     public void setupData(PlayerData data) {
-        if (data == null || data.player == null) {
+        if (data == null || data.uuid == null) {
             return;
         }
         try {
@@ -53,7 +53,7 @@ public class DatabasePlayers extends SQLite {
                 try {
                     conn = getSQLConnection();
                     ps = conn.prepareStatement("SELECT * FROM " + tables.get(0) + " WHERE " + COLUMNS.UUID.name + " = ?");
-                    ps.setString(1, data.player.getUniqueId().toString());
+                    ps.setString(1, data.uuid.toString());
 
                     rs = ps.executeQuery();
                     if (rs.next()) {
@@ -83,7 +83,7 @@ public class DatabasePlayers extends SQLite {
                     + COLUMNS.COUNT.name + ", "
                     + COLUMNS.LAST_COOLDOWN_DATE.name + ") VALUES(?, ?, ?)";
                 List<Object> params = new ArrayList<Object>() {{
-                    add(data.player.getUniqueId().toString());
+                    add(data.uuid.toString());
                     add(data.getRtpCount());
                     add(data.getGlobalCooldown());
                 }};

@@ -6,11 +6,13 @@ Messages:
     Loading: '&aGüvenli bir nokta bulundu! &7Bölge yükleniyor...'
     Teleport: '&aTaşınıyor... &fLütfen güvenli bir konum bulunana kadar bekleyin!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cYetersiz bakiye nedeniyle ışınlanma yapılamadı! &7En az &c$%price% &7bakiyeniz
       olmalı!'
     NotSafe: '&c%attempts% denemede güvenli bir nokta bulunamadı! &7ışınlanma yapılmadı!'
     Hunger: '&cÇok aç olduğunuz için ışınlanma yapılamadı, bir şeyler yiyin!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player%, x=%x% y=%y% z=%z% konumuna taşındı.'
     NotSafe: '&c%attempts% denemede %player%, güvenli bir nokta bulunamadı!'
     Biome: '&cGörünüşe göre &7%biome%&c biyomu mevcut değil! &7Sekme listesini kullanmayı

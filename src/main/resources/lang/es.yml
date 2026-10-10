@@ -7,10 +7,12 @@ Messages:
     Loading: '&a¡Lugar seguro localizado! &7Cargando chunks...'
     Teleport: '&f¡&aTeletransportandote... &fpor favor, espere mientras encontramos un lugar seguro!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&c¡No pudimos teletransportarte aleatoriamente por falta de fondos! &7¡Debes tener al menos $%price% &7para teletransportarte!'
     NotSafe: '&c¡No pudimos encontrar un lugar seguro en %attempts% intentos! &7¡No fuiste teletransportado!'
     Hunger: '&c¡No pudimos teletransportarte aleatoriamente porque tienes... &7demasiada hambre&c, come algo amigo!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&7¡&a%player% ha sido teletransportado a&7 x=%x% y=%y% z=%z%!'
     NotSafe: '&c¡No se pudo encontrar un lugar seguro en %attempts% intentos! &7¡%player% no fue teletransportado aleatoriamente!'
     Biome: '&c¡Parece que el bioma&7 %biome%&c no existe! &7¡Intenta usar la lista del tab!'

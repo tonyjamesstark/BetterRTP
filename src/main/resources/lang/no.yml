@@ -7,10 +7,12 @@ Messages:
     Loading: 'Trygt sted funnet! &7Laster biter ... '
     Teleport: '&a Teleporter ... &7vent, mens vi finner et trygt sted!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cKan ikke teleportere på grunn av manglende penger! &7Du må ha minst $%price% &7for rtp! '
     NotSafe: '&cKan ikke finne et trygt sted innen%forsøk%forsøk! &7Du ble ikke teleportert! '
     Hunger: '&cKan ikke rtp fordi du er ... &7for sulten &c, spis noe!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&en%player% er blitt teleportert til &7 x=%x% y=%y% z =%z% i &f%forsøk%&7 forsøk!'
     NotSafe: '&cKan ikke finne et trygt sted innen %attempts% forsøk! &7%player% ble ikke teleportert! '
     Biome: '&cSer ut som at %biome%&c ikke eksisterer! &7Prøv å bruke fanelisten! '

@@ -7,10 +7,12 @@ Messages:
     Loading: '&aNalezeno bezpečné místo! &7Načítám chunky...'
     Teleport: '&aTeleportuji... &fProsím, počkejte, než nalezneme bezpečné místo!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cNebyl/a jsi teleportován, protože nemáš dostatek peněz! &7Musíš mít alespoň $%price% &7pro teleport!'
     NotSafe: '&cNepodařilo se najít bezpečné místo po %attempts% pokusech! &7Nebyl/a jsi teleportován/a!'
     Hunger: '&cNebyl/a jsi teleportován, protože jsi... &7příliš hladový/á.&c Sněz něco, kámo!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% byl/a teleportován/a na&7 x=%x% y=%y% z=%z%!'
     NotSafe: '&cNepodařilo se najít bezpečné místo po %attempts% pokusech! &7%player% nebyl/a teleportován/a!'
     Biome: '&cVypadá to, že biom&7 %biome%&c neexistuje! &7Zkus použít tabulátor!'

@@ -3,6 +3,7 @@ package me.SuperRonanCraft.BetterRTP.player.events;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import me.SuperRonanCraft.BetterRTP.references.customEvents.RTP_TeleportPostEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -24,7 +25,7 @@ public class EventListener implements Listener {
         interact.load();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onLeave(PlayerQuitEvent e) {
         Leave.event(e);
     }
@@ -47,11 +48,6 @@ public class EventListener implements Listener {
     @EventHandler
     private void click(InventoryClickEvent e) {
         Click.click(e);
-    }
-
-    @EventHandler
-    private void teleport(PlayerTeleportEvent e) {
-        Teleport.tpEvent(e);
     }
 
     @EventHandler

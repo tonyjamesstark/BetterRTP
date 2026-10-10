@@ -7,12 +7,14 @@ Messages:
     Loading: '&aBiztonságos hely kiválasztva! &7Töltés...'
     Teleport: '&aTeleportálás... &fkérlek várj, míg biztonságos helyet találunk!'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cNem sikerült RTP a nem elegendő pénz miatt! &7Legalább
       $%price% &7kell lennie az RTP-hez!'
     NotSafe: '&cNem található biztonságos hely %attempts% próbálkozás után! &7Nem történt
       RTP!'
     Hunger: '&cNem sikerült RTP mert... &7túl éhes vagy, egyél valamit!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% áttelepítve ide&7 x=%x% y=%y% z=%z%'
     NotSafe: '&cNem található biztonságos hely %attempts% próbálkozás után! &7%player% nem
       lett áttelepítve!'

@@ -33,6 +33,7 @@ public class RTPEffect_Particles {
             };
 
     void load() {
+        effects.clear();
         FileOther.FILETYPE config = getPl().getFiles().getType(FileOther.FILETYPE.EFFECTS);
         enabled = config.getBoolean("Particles.Enabled");
         if (!enabled) return;
@@ -57,7 +58,7 @@ public class RTPEffect_Particles {
                     "Try using '/rtp info particles' to get a list of available particles");
         } catch (ExceptionInInitializerError | NoClassDefFoundError e2) {
             effects.clear();
-            getPl().getLogger().severe("The particle '" + typeTrying + "' created a fatal error when loading particles! Your MC version isn't supported!");
+            getPl().getLogger().warning("Particles unsupported on this version, disabled.");
             enabled = false;
         }
         shape = config.getString("Particles.Shape").toUpperCase();

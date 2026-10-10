@@ -66,8 +66,9 @@ public abstract class SQLite {
 
         AsyncHandler.async(() -> {
             Connection connection = getSQLConnection();
+            Statement s = null;
             try {
-                Statement s = connection.createStatement();
+                s = connection.createStatement();
                 for (String table : tables) {
                     s.executeUpdate(getCreateTable(table));
                     //s.executeUpdate(createTable_bank);
@@ -83,10 +84,16 @@ public abstract class SQLite {
                     }
                     BetterRTP.debug("Database " + type.name() + ":" + table + " configured and loaded!");
                 }
-                s.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
+                if (s != null) {
+                    try {
+                        s.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (connection != null) {
                     try {
                         connection.close();
@@ -223,9 +230,17 @@ public abstract class SQLite {
 
     protected void close(PreparedStatement ps, ResultSet rs, Connection conn) {
         try {
-            if (ps != null) ps.close();
-            if (conn != null) conn.close();
             if (rs != null) rs.close();
+        } catch (SQLException ex) {
+            Error.close(BetterRTP.getInstance(), ex);
+        }
+        try {
+            if (ps != null) ps.close();
+        } catch (SQLException ex) {
+            Error.close(BetterRTP.getInstance(), ex);
+        }
+        try {
+            if (conn != null) conn.close();
         } catch (SQLException ex) {
             Error.close(BetterRTP.getInstance(), ex);
         }

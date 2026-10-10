@@ -7,10 +7,12 @@ Messages:
     Loading: '&aLuogo sicuro localizzato! &7Caricamento...'
     Teleport: '&aTeletrasporto in corso... ricerca di un luogo sicuro...'
   Failed:
+    Cancelled: '&cYour teleport was cancelled! &7You were not RTP''d!'
     Price: '&cTeletrasporto non avvenuto per la seguente ragione: &fdevi spendere $%price% per teletrasportarti randomicamente!'
     NotSafe: '&cTeletrasporto non avvenuto per la seguente ragione: &fluogo sicuro non localizzato dopo %attempts% tentativi!'
     Hunger: '&cTeletrasporto non avvenuto per la seguente ragione: &fdevi recuperare la fame prima di teletrasportarti!'
   Other:
+    Cancelled: '&c%player%''s teleport was cancelled! &7%player% was not rtp''d!'
     Success: '&a%player% è stato teletrasportato a&7 x=%x% y=%y% z=%z% in &f%attempts% &7tentativi!'
     NotSafe: '&cTeletrasporto non avvenuto in seguito a %attempts% tentativi! &7%player% non è stato spostato, perché nessun luogo sicuro è stato trovato.'
     Biome: '&cIl bioma &fc%biome%&c non esiste! &7Prova a utilizzare la lista inclusa nel Tab completer.'
