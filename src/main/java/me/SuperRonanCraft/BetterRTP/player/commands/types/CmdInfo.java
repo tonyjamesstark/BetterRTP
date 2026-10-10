@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +39,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import xyz.xenondevs.particle.ParticleEffect;
 
 public class CmdInfo implements RTPCommand, RTPCommandHelpable {
 
@@ -109,7 +109,7 @@ public class CmdInfo implements RTPCommand, RTPCommandHelpable {
         List<String> info = new ArrayList<>();
         // BetterRTP pl = BetterRTP.getInstance();
 
-        for (ParticleEffect eff : ParticleEffect.VALUES) {
+        for (Particle eff : Particle.values()) {
             if (info.isEmpty() || info.size() % 2 == 0) {
                 info.add("&7" + eff.name() + "&r");
             } else

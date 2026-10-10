@@ -3,25 +3,27 @@ package me.SuperRonanCraft.BetterRTP.player.rtp.effects;
 import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import me.SuperRonanCraft.BetterRTP.references.file.FileOther;
 import me.SuperRonanCraft.BetterRTP.versions.AsyncHandler;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import xyz.xenondevs.particle.ParticleEffect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-
-//---
-//Credit to @ByteZ1337 for ParticleLib - https://github.com/ByteZ1337/ParticleLib
-//
-//Use of particle creation
-//---
+import java.util.Map;
+import java.util.Set;
 
 public class RTPEffect_Particles {
 
     private boolean enabled;
-    private final List<ParticleEffect> effects = new ArrayList<>();
+    private final List<Particle> effects = new ArrayList<>();
     private String shape;
     private final int precision = 16;
 
@@ -31,6 +33,45 @@ public class RTPEffect_Particles {
             "EXPLODE", //Make an explosive entrance
             "TELEPORT" //Startrek type of portal
             };
+
+    // Pre-1.13 (and a few later-renamed) particle names that older BetterRTP configs may still
+    // use, mapped to their modern org.bukkit.Particle constant.
+    private static final Map<String, String> LEGACY_NAMES = new HashMap<>();
+    static {
+        LEGACY_NAMES.put("BARRIER", "BLOCK_MARKER");
+        LEGACY_NAMES.put("BLOCK_CRACK", "BLOCK");
+        LEGACY_NAMES.put("BLOCK_DUST", "BLOCK");
+        LEGACY_NAMES.put("CRIT_MAGIC", "ENCHANTED_HIT");
+        LEGACY_NAMES.put("DRIP_LAVA", "DRIPPING_LAVA");
+        LEGACY_NAMES.put("DRIP_WATER", "DRIPPING_WATER");
+        LEGACY_NAMES.put("ENCHANTMENT_TABLE", "ENCHANT");
+        LEGACY_NAMES.put("EXPLOSION_HUGE", "EXPLOSION_EMITTER");
+        LEGACY_NAMES.put("EXPLOSION_LARGE", "EXPLOSION");
+        LEGACY_NAMES.put("EXPLOSION_NORMAL", "POOF");
+        LEGACY_NAMES.put("FIREWORKS_SPARK", "FIREWORK");
+        LEGACY_NAMES.put("ITEM_CRACK", "ITEM");
+        LEGACY_NAMES.put("MOB_APPEARANCE", "ELDER_GUARDIAN");
+        LEGACY_NAMES.put("REDSTONE", "DUST");
+        LEGACY_NAMES.put("SLIME", "ITEM_SLIME");
+        LEGACY_NAMES.put("SMOKE_LARGE", "LARGE_SMOKE");
+        LEGACY_NAMES.put("SMOKE_NORMAL", "SMOKE");
+        LEGACY_NAMES.put("SNOWBALL", "ITEM_SNOWBALL");
+        LEGACY_NAMES.put("SPELL", "EFFECT");
+        LEGACY_NAMES.put("SPELL_INSTANT", "INSTANT_EFFECT");
+        LEGACY_NAMES.put("SPELL_MOB", "ENTITY_EFFECT");
+        LEGACY_NAMES.put("SPELL_WITCH", "WITCH");
+        LEGACY_NAMES.put("SUSPENDED", "UNDERWATER");
+        LEGACY_NAMES.put("TOTEM", "TOTEM_OF_UNDYING");
+        LEGACY_NAMES.put("VILLAGER_ANGRY", "ANGRY_VILLAGER");
+        LEGACY_NAMES.put("VILLAGER_HAPPY", "HAPPY_VILLAGER");
+        LEGACY_NAMES.put("WATER_BUBBLE", "BUBBLE");
+        LEGACY_NAMES.put("WATER_DROP", "RAIN");
+        LEGACY_NAMES.put("WATER_SPLASH", "SPLASH");
+        LEGACY_NAMES.put("WATER_WAKE", "FISHING");
+    }
+
+    // Names already warned about, so a bad config only logs once per name.
+    private static final Set<String> warnedUnknown = new HashSet<>();
 
     void load() {
         effects.clear();
@@ -45,21 +86,15 @@ public class RTPEffect_Particles {
             types = new ArrayList<>();
             types.add(config.getString("Particles.Type"));
         }
-        String typeTrying = null;
-        try {
-            for (String type : types) {
-                typeTrying = type;
-                effects.add(ParticleEffect.valueOf(type.toUpperCase()));
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            effects.clear();
-            effects.add(ParticleEffect.ASH);
-            getPl().getLogger().severe("The particle '" + typeTrying + "' doesn't exist! Default particle enabled... " +
+        for (String type : types) {
+            Particle particle = resolveParticle(type);
+            if (particle != null)
+                effects.add(particle);
+        }
+        if (effects.isEmpty()) {
+            effects.add(Particle.ASH);
+            getPl().getLogger().severe("No valid particle configured! Default particle enabled... " +
                     "Try using '/rtp info particles' to get a list of available particles");
-        } catch (ExceptionInInitializerError | NoClassDefFoundError e2) {
-            effects.clear();
-            getPl().getLogger().warning("Particles unsupported on this version, disabled.");
-            enabled = false;
         }
         shape = config.getString("Particles.Shape").toUpperCase();
         if (!Arrays.asList(shapeTypes).contains(shape)) {
@@ -69,10 +104,24 @@ public class RTPEffect_Particles {
         }
     }
 
+    private static Particle resolveParticle(String name) {
+        if (name == null) return null;
+        String upper = name.toUpperCase();
+        String mapped = LEGACY_NAMES.getOrDefault(upper, upper);
+        try {
+            return Particle.valueOf(mapped);
+        } catch (IllegalArgumentException e) {
+            if (warnedUnknown.add(upper))
+                BetterRTP.getInstance().getLogger().warning("The particle '" + name + "' doesn't exist on this version, skipping. " +
+                        "Try using '/rtp info particles' to get a list of available particles");
+            return null;
+        }
+    }
+
     public void display(Player p) {
         if (!enabled) return;
         AsyncHandler.async(() -> {
-            try { //Incase the library errors out
+            try { //Incase a particle/shape combination errors out
                 switch (shape) {
                     case "TELEPORT":
                         partTeleport(p);
@@ -95,9 +144,8 @@ public class RTPEffect_Particles {
         Location loc = p.getLocation().add(new Vector(0, 1.75, 0));
         for (int index = 1; index < precision; index++) {
             Vector vec = getVecCircle(index);
-            for (ParticleEffect effect : effects) {
-                effect.display(loc.clone().add(vec), new Vector(0, -0.125, 0), .15f, 0, null, p);
-            }
+            for (Particle effect : effects)
+                spawnDirectional(p, effect, loc.clone().add(vec), new Vector(0, -0.125, 0), .15f);
         }
     }
 
@@ -105,11 +153,9 @@ public class RTPEffect_Particles {
         Location loc = p.getLocation();
         for (float y = 2.5f; y > 0; y -= .25f)
             for (int index = 1; index < precision; index++) {
-                //double yran = ran.nextGaussian() * pHeight;
                 Vector vec = getVecCircle(index).add(new Vector(0, y, 0));
-                for (ParticleEffect effect : effects) {
-                    effect.display(loc.clone().add(vec), p);
-                }
+                for (Particle effect : effects)
+                    spawnStatic(p, effect, loc.clone().add(vec));
             }
     }
 
@@ -117,10 +163,45 @@ public class RTPEffect_Particles {
         Location loc = p.getLocation().add(new Vector(0, 1, 0));
         for (int index = 1; index < precision; index++) {
             Vector vec = getVecCircle(index);
-            for (ParticleEffect effect : effects) {
-                effect.display(loc.clone().add(vec), vec, 1.5f, 0, null, p);
-            }
+            for (Particle effect : effects)
+                spawnDirectional(p, effect, loc.clone().add(vec), vec, 1.5f);
         }
+    }
+
+    // Spawns one particle at the exact location, visible only to `p`.
+    private void spawnStatic(Player p, Particle particle, Location loc) {
+        spawn(p, particle, loc, 1, 0, 0, 0, 0);
+    }
+
+    // Spawns a single "directional" particle (offset doubles as velocity when count is 0),
+    // visible only to `p`.
+    private void spawnDirectional(Player p, Particle particle, Location loc, Vector offset, float speed) {
+        spawn(p, particle, loc, 0, offset.getX(), offset.getY(), offset.getZ(), speed);
+    }
+
+    private void spawn(Player p, Particle particle, Location loc, int count, double offX, double offY, double offZ, double extra) {
+        try {
+            Class<?> dataType = particle.getDataType();
+            if (dataType == Void.class) {
+                p.spawnParticle(particle, loc, count, offX, offY, offZ, extra);
+                return;
+            }
+            Object data = defaultDataFor(dataType);
+            if (data == null) return; //Can't synthesize sensible data for this particle, skip it rather than throw
+            p.spawnParticle(particle, loc, count, offX, offY, offZ, extra, data);
+        } catch (Throwable t) {
+            //A misconfigured or unsupported particle must never break the teleport effects
+        }
+    }
+
+    private static Object defaultDataFor(Class<?> dataType) {
+        if (dataType == Particle.DustOptions.class)
+            return new Particle.DustOptions(Color.RED, 1.0f);
+        if (dataType == BlockData.class)
+            return Material.STONE.createBlockData();
+        if (dataType == ItemStack.class)
+            return new ItemStack(Material.STONE);
+        return null;
     }
 
     private Vector getVecCircle(int index) {
