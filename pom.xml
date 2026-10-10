@@ -12,7 +12,7 @@
     <!-- Upload patches to https://repo.ronanplugins.com/#/ -->
 
     <properties>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -53,15 +53,11 @@
                 <!-- Shade PaperLib into project -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.2</version>
                 <configuration>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml
                     </dependencyReducedPomLocation>
                     <relocations>
-                        <relocation>
-                            <pattern>io.papermc.lib</pattern>
-                            <shadedPattern>me.SuperRonanCraft.BetterRTP.lib.paperlib</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>com.tcoded.folialib</pattern>
                             <shadedPattern>me.SuperRonanCraft.BetterRTP.lib.folialib</shadedPattern>
@@ -82,8 +78,15 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <!-- JDK 25's javac no longer auto-discovers annotation processors from the
+                         compile classpath; lombok needs an explicit processor path. -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
@@ -164,18 +167,11 @@
         </repository>
     </repositories>
     <dependencies>
-        <!--Spigot API-->
+        <!--Paper API-->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Spigot Stuff -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>26.2.build.129-stable</version>
             <scope>provided</scope>
         </dependency>
         <!-- Vault -->
@@ -185,11 +181,11 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Paper Library for Async Chunk/Teleport -->
+        <!-- JSON (bundled by spigot-api 1.8.8, not by paper-api) -->
         <dependency>
-            <groupId>io.papermc</groupId>
-            <artifactId>paperlib</artifactId>
-            <version>1.0.8</version>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- WorldGuard (https://dev.bukkit.org/projects/worldguard) -->
@@ -198,6 +194,17 @@
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.3</version>
             <scope>provided</scope>
+            <exclusions>
+                <!-- Transitive-only, not cached in ~/.m2 and unused: paper-api replaces both. -->
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>paperlib</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- RedProtect (https://www.spigotmc.org/resources/redprotect.15841/) -->
         <dependency>
@@ -211,6 +218,13 @@
             <artifactId>RedProtect-Spigot-1.13</artifactId>
             <version>7.7.3</version>
             <scope>provided</scope>
+            <exclusions>
+                <!-- Transitive-only spigot-api 1.13.2, not cached in ~/.m2: paper-api replaces it. -->
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- FactionsUUID (https://www.spigotmc.org/resources/factionsuuid.1035/) -->
         <dependency>
@@ -273,15 +287,6 @@
             <artifactId>Pueblos</artifactId>
             <version>97b96c9</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- Particles Library
-        https://github.com/ByteZ1337/ParticleLib
-        (https://github.com/ByteZ1337/ParticleLib/blob/master/src/main/java/xyz/xenondevs/particle/ParticleEffect.java) -->
-        <dependency>
-            <groupId>xyz.xenondevs</groupId>
-            <artifactId>particle</artifactId>
-            <version>1.8.4</version>
-            <scope>compile</scope>
         </dependency>
         <!-- Lombok Support (@Getter & @Setter)-->
         <dependency>
