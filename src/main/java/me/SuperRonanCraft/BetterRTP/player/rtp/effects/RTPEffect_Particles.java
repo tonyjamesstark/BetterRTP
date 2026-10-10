@@ -34,8 +34,7 @@ public class RTPEffect_Particles {
             "TELEPORT" //Startrek type of portal
             };
 
-    // Pre-1.13 (and a few later-renamed) particle names that older BetterRTP configs may still
-    // use, mapped to their modern org.bukkit.Particle constant.
+    // ParticleLib/pre-1.20.5 names that existing configs still use
     private static final Map<String, String> LEGACY_NAMES = new HashMap<>();
     static {
         LEGACY_NAMES.put("BARRIER", "BLOCK_MARKER");
@@ -70,7 +69,6 @@ public class RTPEffect_Particles {
         LEGACY_NAMES.put("WATER_WAKE", "FISHING");
     }
 
-    // Names already warned about, so a bad config only logs once per name.
     private static final Set<String> warnedUnknown = new HashSet<>();
 
     void load() {
@@ -168,13 +166,11 @@ public class RTPEffect_Particles {
         }
     }
 
-    // Spawns one particle at the exact location, visible only to `p`.
     private void spawnStatic(Player p, Particle particle, Location loc) {
         spawn(p, particle, loc, 1, 0, 0, 0, 0);
     }
 
-    // Spawns a single "directional" particle (offset doubles as velocity when count is 0),
-    // visible only to `p`.
+    // count 0 makes the offset the particle's velocity
     private void spawnDirectional(Player p, Particle particle, Location loc, Vector offset, float speed) {
         spawn(p, particle, loc, 0, offset.getX(), offset.getY(), offset.getZ(), speed);
     }
